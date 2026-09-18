@@ -66,6 +66,36 @@
         </div>
 
         <!-- ============ FILTER & PENCARIAN ============ -->
+        <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+        <!-- Tombol filter kategori -->
+        <div id="filterGroup" class="flex flex-wrap gap-2">
+            <button type="button" data-filter="semua"
+            class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition">
+            Semua
+            </button>
+            <button type="button" data-filter="web"
+            class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition">
+            Web
+            </button>
+            <button type="button" data-filter="javascript"
+            class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition">
+            JavaScript
+            </button>
+            <button type="button" data-filter="ui"
+            class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition">
+            UI/UX
+            </button>
+        </div>
+
+        <!-- Kotak pencarian -->
+        <div class="sm:w-72">
+            <label for="cariProyek" class="sr-only">Cari proyek</label>
+            <input id="cariProyek" type="search" placeholder="Cari proyek…"
+            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
+        </div>
+
+        </div>
         <!-- Akan kita isi di Langkah [B] -->
 
         <!-- ============ GRID KARTU PROYEK ============ -->
@@ -94,6 +124,14 @@
     <!-- TODO: copy footer dari index.html ke sini -->
 
     <!-- ============ SCRIPT ============ -->
+            <!-- ============ JQUERY ============ -->
+        <!-- Dimuat dari CDN, jadi tidak perlu install -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+        <!-- ============ SCRIPT FILTER & PENCARIAN ============ -->
+        <script>
+        // Kode jQuery akan kita tulis di sini
+        </script>
     <!-- Nanti kita tambahkan jQuery dan script filter di sini -->
 
 </body>
