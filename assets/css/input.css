@@ -1,0 +1,10 @@
+/* File ini adalah INPUT untuk Tailwind.
+   Tailwind akan membaca file ini, menggabungkannya dengan class-class
+   yang kamu pakai di HTML, lalu menghasilkan file output.css */
+
+@tailwind base;       /* Reset & style dasar */
+@tailwind components; /* Class komponen (jarang dipakai, tapi wajib ada) */
+@tailwind utilities;  /* Semua class utility seperti bg-blue-500, p-4, dsb. */
+
+/* Di bawah ini kamu bisa menambah CSS sendiri kalau perlu
+   (akan kita isi nanti setelah Tailwind jalan) */
