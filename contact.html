@@ -266,6 +266,200 @@
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script>
             // Validasi akan kita tulis di [D]
+
+            $(document).ready(function() {
+
+                // ======================================================
+                // KONFIGURASI
+                // ======================================================
+                var POLA_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                var PANJANG_NAMA_MIN = 3;
+                var PANJANG_PESAN_MIN = 10;
+
+                // ======================================================
+                // UTILITAS: Tampilkan pesan error pada sebuah field
+                // ======================================================
+                function tampilkanError($input, $pesanError, teks) {
+                    $pesanError.text(teks);
+                    $input.addClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+                }
+
+                // ======================================================
+                // UTILITAS: Hapus tanda error dari field
+                // ======================================================
+                function hapusError($input, $pesanError) {
+                    $pesanError.text('');
+                    $input.removeClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+                }
+
+                // ======================================================
+                // FUNGSI: Validasi seluruh form
+                // Kembalikan true kalau valid, false kalau ada error
+                // ======================================================
+                function validasiForm() {
+                    var valid = true;
+
+                    // Ambil nilai input
+                    var nama = $('#nama').val().trim();
+                    var email = $('#email').val().trim();
+                    var pesan = $('#pesan').val().trim();
+                    var setuju = $('#setuju').is(':checked');
+
+                    // Reset semua pesan error
+                    $('#err_nama').text('');
+                    $('#err_email').text('');
+                    $('#err_pesan').text('');
+                    $('#err_setuju').text('');
+
+                    // ---------- Validasi Nama ----------
+                    if (nama === '') {
+                    tampilkanError($('#nama'), $('#err_nama'), 'Nama harus diisi.');
+                    valid = false;
+                    } else if (nama.length < PANJANG_NAMA_MIN) {
+                    tampilkanError($('#nama'), $('#err_nama'), 'Nama minimal ' + PANJANG_NAMA_MIN + ' karakter.');
+                    valid = false;
+                    } else {
+                    hapusError($('#nama'), $('#err_nama'));
+                    }
+
+                    // ---------- Validasi Email ----------
+                    if (email === '') {
+                    tampilkanError($('#email'), $('#err_email'), 'Email harus diisi.');
+                    valid = false;
+                    } else if (!POLA_EMAIL.test(email)) {
+                    tampilkanError($('#email'), $('#err_email'), 'Format email tidak valid.');
+                    valid = false;
+                    } else {
+                    hapusError($('#email'), $('#err_email'));
+                    }
+
+                    // ---------- Validasi Pesan ----------
+                    if (pesan === '') {
+                    tampilkanError($('#pesan'), $('#err_pesan'), 'Pesan harus diisi.');
+                    valid = false;
+                    } else if (pesan.length < PANJANG_PESAN_MIN) {
+                    tampilkanError($('#pesan'), $('#err_pesan'), 'Pesan minimal ' + PANJANG_PESAN_MIN + ' karakter.');
+                    valid = false;
+                    } else {
+                    hapusError($('#pesan'), $('#err_pesan'));
+                    }
+
+                    // ---------- Validasi Checkbox ----------
+                    if (!setuju) {
+                    $('#err_setuju').text('Centang persetujuan terlebih dahulu.');
+                    valid = false;
+                    } else {
+                    $('#err_setuju').text('');
+                    }
+
+                    return valid;
+                }
+
+                // ======================================================
+                // EVENT: Submit form
+                // ======================================================
+                $('#formKontak').on('submit', function(event) {
+                    // Cegah form terkirim ke server (refresh halaman)
+                    event.preventDefault();
+
+                    // Sembunyikan pesan sukses sebelumnya (kalau ada)
+                    $('#pesanSukses').addClass('hidden');
+
+                    // Validasi
+                    if (!validasiForm()) {
+                    // Fokus ke field error pertama
+                    var $errorPertama = $('#formKontak .border-rose-500').first();
+                    if ($errorPertama.length) {
+                        $errorPertama.focus();
+                    }
+                    return;
+                    }
+
+                    // ======================================================
+                    // KALAU VALID: Tampilkan pesan sukses
+                    // ======================================================
+                    var nama = $('#nama').val().trim();
+
+                    $('#pesanSukses')
+                    .removeClass('hidden')
+                    .text('Terima kasih, ' + nama + '! Pesanmu sudah tervalidasi dan siap dikirim. (Ini demo, belum terhubung ke server.)');
+
+                    // Scroll ke pesan sukses
+                    $('html, body').animate({
+                    scrollTop: $('#pesanSukses').offset().top - 100
+                    }, 400);
+
+                    // Reset form
+                    $('#formKontak')[0].reset();
+                    $('#hitungKarakter').text('0 karakter');
+                    $('#err_nama, #err_email, #err_pesan, #err_setuju').text('');
+                    $('#nama, #email, #pesan').removeClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+                });
+
+                // ======================================================
+                // EVENT: Validasi ulang saat user pindah field (blur)
+                // ======================================================
+                $('#nama').on('blur', function() {
+                    var nilai = $(this).val().trim();
+                    if (nilai === '') return;   // Jangan error kalau masih kosong
+
+                    if (nilai.length < PANJANG_NAMA_MIN) {
+                    tampilkanError($(this), $('#err_nama'), 'Nama minimal ' + PANJANG_NAMA_MIN + ' karakter.');
+                    } else {
+                    hapusError($(this), $('#err_nama'));
+                    }
+                });
+
+                $('#email').on('blur', function() {
+                    var nilai = $(this).val().trim();
+                    if (nilai === '') return;
+
+                    if (!POLA_EMAIL.test(nilai)) {
+                    tampilkanError($(this), $('#err_email'), 'Format email tidak valid.');
+                    } else {
+                    hapusError($(this), $('#err_email'));
+                    }
+                });
+
+                $('#pesan').on('blur', function() {
+                    var nilai = $(this).val().trim();
+                    if (nilai === '') return;
+
+                    if (nilai.length < PANJANG_PESAN_MIN) {
+                    tampilkanError($(this), $('#err_pesan'), 'Pesan minimal ' + PANJANG_PESAN_MIN + ' karakter.');
+                    } else {
+                    hapusError($(this), $('#err_pesan'));
+                    }
+                });
+
+                // ======================================================
+                // EVENT: Hitung karakter pesan secara real-time
+                // ======================================================
+                $('#pesan').on('input', function() {
+                    var jumlah = $(this).val().trim().length;
+                    var $hitung = $('#hitungKarakter');
+
+                    $hitung.text(jumlah + ' karakter');
+
+                    // Ubah warna: merah kalau kurang dari 10
+                    if (jumlah > 0 && jumlah < PANJANG_PESAN_MIN) {
+                    $hitung.removeClass('text-slate-400').addClass('text-rose-500');
+                    } else {
+                    $hitung.removeClass('text-rose-500').addClass('text-slate-400');
+                    }
+                });
+
+                // ======================================================
+                // EVENT: Reset form
+                // ======================================================
+                $('#btnReset').on('click', function() {
+                    $('#err_nama, #err_email, #err_pesan, #err_setuju').text('');
+                    $('#nama, #email, #pesan').removeClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+                    $('#hitungKarakter').text('0 karakter').removeClass('text-rose-500').addClass('text-slate-400');
+                    $('#pesanSukses').addClass('hidden');
+                });
+
+            });
         </script>
 
     </body>
