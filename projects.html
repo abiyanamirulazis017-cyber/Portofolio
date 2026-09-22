@@ -99,8 +99,76 @@
         <!-- Akan kita isi di Langkah [B] -->
 
         <!-- ============ GRID KARTU PROYEK ============ -->
-        <!-- Akan kita isi di Langkah [C] -->
+        <div id="gridProyek" class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
+            <!-- KARTU 1: Tugas JavaScript (WAJIB - jangan dihapus) -->
+            <article data-kategori="javascript" data-judul="tugas javascript penjualan barang"
+                class="proyek-card flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+                <div class="grid h-40 place-items-center bg-gradient-to-br from-blue-500 to-blue-700 text-5xl">🧮</div>
+                <div class="flex flex-1 flex-col p-5">
+                <span class="w-fit rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">JavaScript</span>
+                <h2 class="mt-3 text-lg font-bold text-slate-900">Tugas JavaScript — Penjualan Barang</h2>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
+                    Program penjualan barang dengan perhitungan total, diskon 10%, dan validasi form.
+                </p>
+                <a href="js-task/index.html" class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:gap-2 transition-all">
+                    Lihat tugas →
+                </a>
+                </div>
+            </article>
+
+            <!-- KARTU 2: Contoh - GANTI dengan proyekmu -->
+            <article data-kategori="web" data-judul="landing page portofolio"
+                class="proyek-card flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+                <div class="grid h-40 place-items-center bg-gradient-to-br from-fuchsia-500 to-purple-700 text-5xl">🌐</div>
+                <div class="flex flex-1 flex-col p-5">
+                <span class="w-fit rounded-full bg-fuchsia-50 px-2.5 py-1 text-xs font-semibold text-fuchsia-700">Web</span>
+                <h2 class="mt-3 text-lg font-bold text-slate-900">Landing Page Portofolio</h2>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
+                    Website portofolio ini sendiri — dibangun dengan Tailwind CSS dan auto-deploy.
+                </p>
+                <a href="index.html" class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-fuchsia-600 hover:gap-2 transition-all">
+                    Lihat halaman →
+                </a>
+                </div>
+            </article>
+
+            <!-- KARTU 3: Contoh - GANTI dengan proyekmu -->
+            <article data-kategori="ui" data-judul="eksperimen desain antarmuka"
+                class="proyek-card flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+                <div class="grid h-40 place-items-center bg-gradient-to-br from-amber-500 to-orange-700 text-5xl">🎨</div>
+                <div class="flex flex-1 flex-col p-5">
+                <span class="w-fit rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">UI/UX</span>
+                <h2 class="mt-3 text-lg font-bold text-slate-900">Eksperimen Desain Antarmuka</h2>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
+                    Latihan merancang tata letak dan komponen antarmuka yang bersih.
+                </p>
+                <span class="mt-4 text-sm font-semibold text-slate-400">Segera hadir</span>
+                </div>
+            </article>
+
+            <!-- KARTU 4: Contoh - GANTI dengan proyekmu -->
+            <article data-kategori="javascript" data-judul="kalkulator sederhana"
+                class="proyek-card flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+                <div class="grid h-40 place-items-center bg-gradient-to-br from-emerald-500 to-teal-700 text-5xl">📐</div>
+                <div class="flex flex-1 flex-col p-5">
+                <span class="w-fit rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">JavaScript</span>
+                <h2 class="mt-3 text-lg font-bold text-slate-900">Kalkulator Sederhana</h2>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
+                    Latihan membuat kalkulator dengan operasi aritmatika dasar.
+                </p>
+                <span class="mt-4 text-sm font-semibold text-slate-400">Segera hadir</span>
+                </div>
+            </article>
+
+        </div>
+        <!-- Akan kita isi di Langkah [C] -->
+                
+        <!-- ============ PESAN KOSONG ============ -->
+        <p id="pesanKosong" class="hidden py-16 text-center text-slate-500">
+            Tidak ada proyek yang cocok dengan pencarianmu. 🔍
+        </p>
+        
     </main>
 
     <!-- ============ FOOTER ============ -->
@@ -131,6 +199,98 @@
         <!-- ============ SCRIPT FILTER & PENCARIAN ============ -->
         <script>
         // Kode jQuery akan kita tulis di sini
+            // Tunggu sampai HTML selesai dimuat
+            $(document).ready(function() {
+
+            // ======================================================
+            // KONFIGURASI WARNA TOMBOL
+            // Dua daftar class Tailwind: satu untuk aktif, satu untuk tidak
+            // ======================================================
+            var classAktif = ['bg-blue-600', 'border-blue-600', 'text-white'];
+            var classNonaktif = ['bg-white', 'border-slate-300', 'text-slate-700'];
+
+            // ======================================================
+            // FUNGSI: Perbarui tampilan tombol (warna aktif/tidak)
+            // ======================================================
+            function perbaruiTombol() {
+                $('.filter-btn').each(function() {
+                var filterTombol = $(this).data('filter');
+                var filterSekarang = $('.filter-btn.aktif').data('filter');
+
+                if (filterTombol === filterSekarang) {
+                    $(this).addClass(classAktif.join(' '));
+                    $(this).removeClass(classNonaktif.join(' '));
+                } else {
+                    $(this).removeClass(classAktif.join(' '));
+                    $(this).addClass(classNonaktif.join(' '));
+                }
+                });
+            }
+
+            // ======================================================
+            // FUNGSI: Terapkan filter & pencarian
+            // ======================================================
+            function terapkanFilter() {
+                var filterAktif = $('.filter-btn.aktif').data('filter') || 'semua';
+                var kataKunci = $('#cariProyek').val().toLowerCase().trim();
+                var jumlahTerlihat = 0;
+
+                $('.proyek-card').each(function() {
+                var kategori = $(this).data('kategori');
+                var judul = $(this).data('judul');
+
+                // Cek apakah cocok filter
+                var cocokKategori = (filterAktif === 'semua') || (kategori === filterAktif);
+
+                // Cek apakah cocok pencarian (judul mengandung kata kunci)
+                var cocokPencarian = (kataKunci === '') || (judul.indexOf(kataKunci) !== -1);
+
+                if (cocokKategori && cocokPencarian) {
+                    $(this).show();
+                    jumlahTerlihat++;
+                } else {
+                    $(this).hide();
+                }
+                });
+
+                // Tampilkan pesan "tidak ada hasil" kalau kosong
+                if (jumlahTerlihat === 0) {
+                $('#pesanKosong').show();
+                } else {
+                $('#pesanKosong').hide();
+                }
+            }
+
+            // ======================================================
+            // EVENT: Klik tombol filter
+            // ======================================================
+            $('.filter-btn').click(function() {
+                // Hapus class 'aktif' dari semua tombol
+                $('.filter-btn').removeClass('aktif');
+
+                // Tambah class 'aktif' ke tombol yang diklik
+                $(this).addClass('aktif');
+
+                // Perbarui warna & terapkan filter
+                perbaruiTombol();
+                terapkanFilter();
+            });
+
+            // ======================================================
+            // EVENT: Ketik di kotak pencarian (real-time)
+            // ======================================================
+            $('#cariProyek').on('input', function() {
+                terapkanFilter();
+            });
+
+            // ======================================================
+            // INISIALISASI: Set tombol "Semua" aktif saat halaman dibuka
+            // ======================================================
+            $('.filter-btn[data-filter="semua"]').addClass('aktif');
+            perbaruiTombol();
+            terapkanFilter();
+
+            });
         </script>
     <!-- Nanti kita tambahkan jQuery dan script filter di sini -->
 
