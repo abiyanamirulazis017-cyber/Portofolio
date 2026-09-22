@@ -268,6 +268,162 @@
             // ======================================================
             hitungTotal();
 
+            // ======================================================
+            // FUNGSI: Tampilkan error pada field
+            // ======================================================
+            function tampilkanError($input, $pesanError, teks) {
+                $pesanError.text(teks);
+                $input.addClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+            }
+
+            // ======================================================
+            // FUNGSI: Hapus error dari field
+            // ======================================================
+            function hapusError($input, $pesanError) {
+                $pesanError.text('');
+                $input.removeClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+            }
+
+            // ======================================================
+            // FUNGSI: Validasi seluruh form
+            // ======================================================
+            function validasiForm() {
+                var valid = true;
+
+                var namaBarang = $('#namaBarang').val().trim();
+                var harga = $('#harga').val().trim();
+                var jumlah = $('#jumlah').val().trim();
+
+                // Reset pesan error
+                $('#err_namaBarang, #err_harga, #err_jumlah').text('');
+
+                // ---------- Validasi Nama Barang ----------
+                if (namaBarang === '') {
+                tampilkanError($('#namaBarang'), $('#err_namaBarang'), 'Nama barang harus diisi.');
+                valid = false;
+                } else {
+                hapusError($('#namaBarang'), $('#err_namaBarang'));
+                }
+
+                // ---------- Validasi Harga ----------
+                if (harga === '') {
+                tampilkanError($('#harga'), $('#err_harga'), 'Harga harus diisi.');
+                valid = false;
+                } else if (isNaN(parseFloat(harga))) {
+                tampilkanError($('#harga'), $('#err_harga'), 'Harga harus berupa angka.');
+                valid = false;
+                } else if (parseFloat(harga) <= 0) {
+                tampilkanError($('#harga'), $('#err_harga'), 'Harga harus lebih dari 0.');
+                valid = false;
+                } else {
+                hapusError($('#harga'), $('#err_harga'));
+                }
+
+                // ---------- Validasi Jumlah ----------
+                if (jumlah === '') {
+                tampilkanError($('#jumlah'), $('#err_jumlah'), 'Jumlah harus diisi.');
+                valid = false;
+                } else if (isNaN(parseFloat(jumlah))) {
+                tampilkanError($('#jumlah'), $('#err_jumlah'), 'Jumlah harus berupa angka.');
+                valid = false;
+                } else if (parseFloat(jumlah) < 1) {
+                tampilkanError($('#jumlah'), $('#err_jumlah'), 'Jumlah minimal 1.');
+                valid = false;
+                } else {
+                hapusError($('#jumlah'), $('#err_jumlah'));
+                }
+
+                return valid;
+            }
+
+            // ======================================================
+            // EVENT: Submit form → validasi dulu
+            // ======================================================
+            $('#formPenjualan').on('submit', function(event) {
+                event.preventDefault();
+
+                // Sembunyikan pesan sukses lama
+                $('#pesanSukses').addClass('hidden');
+
+                // Validasi
+                if (!validasiForm()) {
+                // Fokus ke field error pertama
+                var $errorPertama = $('#formPenjualan .border-rose-500').first();
+                if ($errorPertama.length) {
+                    $errorPertama.focus();
+                }
+                return;
+                }
+
+                // ======================================================
+                // KALAU VALID: Tampilkan pesan sukses (sementara)
+                // Nanti di [E] kita simpan ke riwayat
+                // ======================================================
+                var nama = $('#namaBarang').val().trim();
+                var hasil = hitungTotal();
+
+                $('#pesanSukses')
+                .removeClass('hidden')
+                .text('Transaksi "' + nama + '" siap disimpan. Bayar: ' +
+                        formatRupiah.format(hasil.bayar) + '.');
+
+                // Reset form
+                $('#formPenjualan')[0].reset();
+                hitungTotal();
+                $('#err_namaBarang, #err_harga, #err_jumlah').text('');
+                $('#namaBarang, #harga, #jumlah').removeClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+                $('#namaBarang').focus();
+            });
+
+            // ======================================================
+            // EVENT: Validasi saat user pindah field (blur)
+            // ======================================================
+            $('#namaBarang').on('blur', function() {
+                var nilai = $(this).val().trim();
+                if (nilai === '') {
+                tampilkanError($(this), $('#err_namaBarang'), 'Nama barang harus diisi.');
+                } else {
+                hapusError($(this), $('#err_namaBarang'));
+                }
+            });
+
+            $('#harga').on('blur', function() {
+                var nilai = $(this).val().trim();
+                if (nilai === '') return;
+
+                if (isNaN(parseFloat(nilai))) {
+                tampilkanError($(this), $('#err_harga'), 'Harga harus berupa angka.');
+                } else if (parseFloat(nilai) <= 0) {
+                tampilkanError($(this), $('#err_harga'), 'Harga harus lebih dari 0.');
+                } else {
+                hapusError($(this), $('#err_harga'));
+                }
+            });
+
+            $('#jumlah').on('blur', function() {
+                var nilai = $(this).val().trim();
+                if (nilai === '') return;
+
+                if (isNaN(parseFloat(nilai))) {
+                tampilkanError($(this), $('#err_jumlah'), 'Jumlah harus berupa angka.');
+                } else if (parseFloat(nilai) < 1) {
+                tampilkanError($(this), $('#err_jumlah'), 'Jumlah minimal 1.');
+                } else {
+                hapusError($(this), $('#err_jumlah'));
+                }
+            });
+
+            // ======================================================
+            // EVENT: Tombol Bersihkan Form
+            // ======================================================
+            $('#btnReset').on('click', function() {
+                $('#formPenjualan')[0].reset();
+                hitungTotal();
+                $('#err_namaBarang, #err_harga, #err_jumlah').text('');
+                $('#namaBarang, #harga, #jumlah').removeClass('border-rose-500 focus:border-rose-500 focus:ring-rose-500/30');
+                $('#pesanSukses').addClass('hidden');
+                $('#namaBarang').focus();
+            });
         });
     </script>
 
