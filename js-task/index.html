@@ -214,6 +214,61 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         // Kode jQuery akan kita tulis di sini
+
+        $(document).ready(function() {
+
+            // ======================================================
+            // KONFIGURASI
+            // ======================================================
+            var PERSEN_DISKON = 0.10;   // 10%
+
+            // Format angka ke Rupiah: 15000 → "Rp 15.000"
+            var formatRupiah = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+
+            // ======================================================
+            // FUNGSI: Hitung total, diskon, bayar
+            // ======================================================
+            function hitungTotal() {
+                // Ambil nilai, konversi ke angka (kalau kosong, jadi 0)
+                var harga = parseFloat($('#harga').val()) || 0;
+                var jumlah = parseFloat($('#jumlah').val()) || 0;
+
+                // Rumus sesuai modul
+                var total = harga * jumlah;
+                var diskon = total * PERSEN_DISKON;
+                var bayar = total - diskon;
+
+                // Tampilkan ke input (dengan format Rupiah)
+                $('#total').val(formatRupiah.format(total));
+                $('#diskon').val(formatRupiah.format(diskon));
+                $('#bayar').val(formatRupiah.format(bayar));
+
+                // Kembalikan nilai mentah untuk dipakai di tempat lain
+                return {
+                total: total,
+                diskon: diskon,
+                bayar: bayar
+                };
+            }
+
+            // ======================================================
+            // EVENT: Hitung otomatis saat user mengetik
+            // ======================================================
+            $('#harga, #jumlah').on('input', function() {
+                hitungTotal();
+            });
+
+            // ======================================================
+            // INISIALISASI: Set nilai awal saat halaman dibuka
+            // ======================================================
+            hitungTotal();
+
+        });
     </script>
 
 </body>
