@@ -41,7 +41,7 @@
         <!-- ============ GRID 2 KOLOM: FORM + INFO ============ -->
         <div class="mt-10 grid gap-6 lg:grid-cols-5">
 
-        <!-- ============ KOLOM KIRI: FORM (3/5 lebar) ============ -->
+            <!-- ============ KOLOM KIRI: FORM (3/5 lebar) ============ -->
             <section class="lg:col-span-3">
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
 
@@ -205,6 +205,62 @@
             </aside>
         </div>
 
+        <!-- ============ RIWAYAT TRANSAKSI ============ -->
+        <section class="mt-12">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+            <!-- Header riwayat -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-6">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900">Riwayat Transaksi</h2>
+                <p class="mt-1 text-sm text-slate-500">
+                Daftar barang yang sudah dihitung pada browser ini.
+                </p>
+            </div>
+            <button type="button" id="btnHapusSemua"
+                class="rounded-xl border border-rose-300 px-4 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-50">
+                Hapus Semua
+            </button>
+            </div>
+
+            <!-- Tabel -->
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[720px] text-left text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                <tr>
+                    <th class="px-5 py-3.5 font-semibold">No</th>
+                    <th class="px-5 py-3.5 font-semibold">Nama Barang</th>
+                    <th class="px-5 py-3.5 text-right font-semibold">Harga</th>
+                    <th class="px-5 py-3.5 text-right font-semibold">Jumlah</th>
+                    <th class="px-5 py-3.5 text-right font-semibold">Total</th>
+                    <th class="px-5 py-3.5 text-right font-semibold">Diskon</th>
+                    <th class="px-5 py-3.5 text-right font-semibold">Bayar</th>
+                    <th class="px-5 py-3.5 text-center font-semibold">Aksi</th>
+                </tr>
+                </thead>
+                <tbody id="tabelRiwayat" class="divide-y divide-slate-100">
+                <tr id="emptyState">
+                    <td colspan="8" class="px-5 py-12 text-center text-slate-400">
+                    Belum ada transaksi. Isi form di atas lalu tekan
+                    <strong>Hitung &amp; Simpan</strong>.
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot id="tabelFooter" class="hidden border-t-2 border-slate-200 bg-slate-50">
+                <tr>
+                    <td colspan="6" class="px-5 py-4 text-right font-bold uppercase tracking-wider text-slate-600">
+                    Grand Total Bayar
+                    </td>
+                    <td id="grandTotal" class="px-5 py-4 text-right font-extrabold text-emerald-700">Rp 0</td>
+                    <td></td>
+                </tr>
+                </tfoot>
+            </table>
+            </div>
+
+        </div>
+        </section>
+
     </main>
 
     <!-- ============ FOOTER ============ -->
@@ -267,6 +323,9 @@
             // INISIALISASI: Set nilai awal saat halaman dibuka
             // ======================================================
             hitungTotal();
+
+            var KUNCI_STORAGE = 'riwayatPenjualan';
+            var riwayat = [];
 
             // ======================================================
             // FUNGSI: Tampilkan error pada field
@@ -337,37 +396,50 @@
             }
 
             // ======================================================
-            // EVENT: Submit form → validasi dulu
+            // EVENT: Submit form → validasi + simpan ke riwayat
             // ======================================================
             $('#formPenjualan').on('submit', function(event) {
                 event.preventDefault();
-
-                // Sembunyikan pesan sukses lama
                 $('#pesanSukses').addClass('hidden');
 
-                // Validasi
+                // ---------- Validasi ----------
                 if (!validasiForm()) {
-                // Fokus ke field error pertama
-                var $errorPertama = $('#formPenjualan .border-rose-500').first();
-                if ($errorPertama.length) {
-                    $errorPertama.focus();
-                }
-                return;
+                    var $errorPertama = $('#formPenjualan .border-rose-500').first();
+                    if ($errorPertama.length) {
+                        $errorPertama.focus();
+                    }
+                    return;
                 }
 
-                // ======================================================
-                // KALAU VALID: Tampilkan pesan sukses (sementara)
-                // Nanti di [E] kita simpan ke riwayat
-                // ======================================================
+                // ---------- Ambil data ----------
                 var nama = $('#namaBarang').val().trim();
+                var harga = parseFloat($('#harga').val());
+                var jumlah = parseFloat($('#jumlah').val());
+
+                // ---------- Hitung ----------
                 var hasil = hitungTotal();
 
-                $('#pesanSukses')
-                .removeClass('hidden')
-                .text('Transaksi "' + nama + '" siap disimpan. Bayar: ' +
-                        formatRupiah.format(hasil.bayar) + '.');
+                // ---------- Tambah ke array riwayat ----------
+                riwayat.push({
+                    nama: nama,
+                    harga: harga,
+                    jumlah: jumlah,
+                    total: hasil.total,
+                    diskon: hasil.diskon,
+                    bayar: hasil.bayar
+                });
 
-                // Reset form
+                // ---------- Simpan & render ----------
+                simpanKeStorage();
+                renderTabel();
+
+                // ---------- Tampilkan pesan sukses ----------
+                $('#pesanSukses')
+                    .removeClass('hidden')
+                    .text('Transaksi "' + nama + '" berhasil disimpan. Jumlah bayar: ' +
+                          formatRupiah.format(hasil.bayar) + '.');
+
+                // ---------- Reset form ----------
                 $('#formPenjualan')[0].reset();
                 hitungTotal();
                 $('#err_namaBarang, #err_harga, #err_jumlah').text('');
@@ -424,6 +496,104 @@
                 $('#pesanSukses').addClass('hidden');
                 $('#namaBarang').focus();
             });
+
+            // ======================================================
+            // RIWAYAT TRANSAKSI (localStorage)
+            // ======================================================
+
+            // ---------- Simpan ke localStorage ----------
+            function simpanKeStorage() {
+                try {
+                localStorage.setItem(KUNCI_STORAGE, JSON.stringify(riwayat));
+                } catch (e) {
+                // localStorage bisa gagal (mode privat). Abaikan saja.
+                }
+            }
+
+            // ---------- Muat dari localStorage ----------
+            function muatDariStorage() {
+                try {
+                var data = localStorage.getItem(KUNCI_STORAGE);
+                if (data) {
+                    var parsed = JSON.parse(data);
+                    if (Array.isArray(parsed)) riwayat = parsed;
+                }
+                } catch (e) {
+                riwayat = [];
+                }
+            }
+
+            // ---------- Render tabel dari array riwayat ----------
+            function renderTabel() {
+                var $tbody = $('#tabelRiwayat');
+                $tbody.empty();
+
+                // Kalau kosong, tampilkan pesan
+                if (riwayat.length === 0) {
+                $tbody.append(
+                    '<tr id="emptyState">' +
+                    '<td colspan="8" class="px-5 py-12 text-center text-slate-400">' +
+                    'Belum ada transaksi. Isi form di atas lalu tekan ' +
+                    '<strong>Hitung &amp; Simpan</strong>.' +
+                    '</td></tr>'
+                );
+                $('#tabelFooter').addClass('hidden');
+                return;
+                }
+
+                var totalBayarSemua = 0;
+
+                // Loop setiap item di array
+                $.each(riwayat, function(index, item) {
+                totalBayarSemua += item.bayar;
+
+                var baris =
+                    '<tr class="transition hover:bg-slate-50">' +
+                    '<td class="px-5 py-4 text-slate-500">' + (index + 1) + '</td>' +
+                    '<td class="px-5 py-4 font-semibold text-slate-800">' + item.nama + '</td>' +
+                    '<td class="px-5 py-4 text-right">' + formatRupiah.format(item.harga) + '</td>' +
+                    '<td class="px-5 py-4 text-right">' + item.jumlah + '</td>' +
+                    '<td class="px-5 py-4 text-right font-medium">' + formatRupiah.format(item.total) + '</td>' +
+                    '<td class="px-5 py-4 text-right text-amber-600">− ' + formatRupiah.format(item.diskon) + '</td>' +
+                    '<td class="px-5 py-4 text-right font-bold text-emerald-700">' + formatRupiah.format(item.bayar) + '</td>' +
+                    '<td class="px-5 py-4 text-center">' +
+                        '<button type="button" data-hapus="' + index + '" ' +
+                        'class="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50">' +
+                        'Hapus</button>' +
+                    '</td>' +
+                    '</tr>';
+
+                $tbody.append(baris);
+                });
+
+                // Update grand total
+                $('#grandTotal').text(formatRupiah.format(totalBayarSemua));
+                $('#tabelFooter').removeClass('hidden');
+            }
+
+            // ---------- Hapus satu transaksi (event delegation) ----------
+            $('#tabelRiwayat').on('click', '[data-hapus]', function() {
+                var index = parseInt($(this).data('hapus'), 10);
+                if (isNaN(index)) return;
+
+                riwayat.splice(index, 1);
+                simpanKeStorage();
+                renderTabel();
+            });
+
+            // ---------- Hapus semua ----------
+            $('#btnHapusSemua').on('click', function() {
+                if (riwayat.length === 0) return;
+                if (!confirm('Hapus semua riwayat transaksi?')) return;
+
+                riwayat = [];
+                simpanKeStorage();
+                renderTabel();
+            });
+
+            // ---------- Inisialisasi ----------
+            muatDariStorage();
+            renderTabel();
         });
     </script>
 
